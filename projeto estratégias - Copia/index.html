@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratório de Química Orgânica Inclusiva</title>
+    <style>
+        /* Cores alteradas para fundo claro com bom contraste */
+        body {
+            background-color: #FFFFFF;
+            color: #1A1A1A;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #008744;
+            text-align: center;
+            border-bottom: 2px solid #008744;
+            padding-bottom: 10px;
+        }
+        .painel-visor {
+            background-color: #F5F5F5;
+            border: 3px dashed #008744;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 250px;
+            gap: 15px;
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.05);
+        }
+        .conteudo-visor {
+            text-align: center;
+            max-width: 600px;
+        }
+        .painel-visor h2 {
+            margin: 0 0 10px 0;
+            font-size: 32px;
+            color: #008744;
+        }
+        .painel-visor p {
+            font-size: 18px;
+            color: #333333;
+            margin: 0;
+            line-height: 1.5;
+        }
+        .imagem-estrutura {
+            max-height: 180px;
+            background-color: #FFFFFF;
+            padding: 10px;
+            border-radius: 8px;
+            display: none; 
+            border: 2px solid #CCCCCC;
+        }
+        .grade-funcoes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+        .botao-funcao {
+            background-color: #EAEAEA;
+            color: #1A1A1A;
+            border: 2px solid #999999;
+            padding: 18px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        /* Destaque visual focado para navegação por teclado (Tab) ou Mouse */
+        .botao-funcao:hover, .botao-funcao:focus {
+            background-color: #008744;
+            color: #FFFFFF;
+            border-color: #004d26;
+            transform: scale(1.03);
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Painel Interativo de Funções Orgânicas</h1>
+    
+    <div class="painel-visor" id="visor-conteudo" role="region" aria-live="polite">
+        <div class="conteudo-visor">
+            <h2 id="titulo-funcao">Toque em uma Função</h2>
+            <p id="texto-funcao">Selecione qualquer botão abaixo para visualizar a fórmula estrutural e ativar a audiodescrição no leitor de tela do seu dispositivo.</p>
+        </div>
+        <img id="imagem-funcao" class="imagem-estrutura" src="" alt="Estrutura química da função selecionada">
+    </div>
+
+    <div class="grade-funcoes">
+        <button class="botao-funcao" onclick="ativarFuncao('hidrocarboneto')" aria-label="Função Hidrocarboneto. Clique para exibir a descrição.">🔥 Hidrocarboneto</button>
+        <button class="botao-funcao" onclick="ativarFuncao('alcool')" aria-label="Função Álcool. Clique para exibir a descrição.">🍺 Álcool</button>
+        <button class="botao-funcao" onclick="ativarFuncao('fenol')" aria-label="Função Fenol. Clique para exibir a descrição.">🧴 Fenol</button>
+        <button class="botao-funcao" onclick="ativarFuncao('aldeido')" aria-label="Função Aldeído. Clique para exibir a descrição.">🍎 Aldeído</button>
+        <button class="botao-funcao" onclick="ativarFuncao('cetona')" aria-label="Função Cetona. Clique para exibir a descrição.">💅 Cetona</button>
+        <button class="botao-funcao" onclick="ativarFuncao('acido_carboxilico')" aria-label="Função Ácido Carboxílico. Clique para exibir a descrição.">🍋 Ácido Carboxílico</button>
+        <button class="botao-funcao" onclick="ativarFuncao('ester')" aria-label="Função Éster. Clique para exibir a descrição.">🍓 Éster</button>
+        <button class="botao-funcao" onclick="ativarFuncao('ether')" aria-label="Função Éter. Clique para exibir a descrição.">🧪 Éter</button>
+        <button class="botao-funcao" onclick="ativarFuncao('amina')" aria-label="Função Aminas. Clique para exibir a descrição.">💊 Aminas</button>
+        <button class="botao-funcao" onclick="ativarFuncao('amida')" aria-label="Função Amidas. Clique para exibir a descrição.">🧬 Amidas</button>
+    </div>
+
+    <audio id="audio-hidrocarboneto" src="sons/hidrocarboneto.mp3"></audio>
+    <audio id="audio-alcool" src="sons/alcool.mp3"></audio>
+    <audio id="audio-fenol" src="sons/fenol.mp3"></audio>
+    <audio id="audio-aldeido" src="sons/aldeido.mp3"></audio>
+    <audio id="audio-cetona" src="sons/cetona.mp3"></audio>
+    <audio id="audio-acido_carboxilico" src="sons/acido_carboxilico.mp3"></audio>
+    <audio id="audio-ester" src="sons/ester.mp3"></audio>
+    <audio id="audio-ether" src="sons/ether.mp3"></audio>
+    <audio id="audio-amina" src="sons/amina.mp3"></audio>
+    <audio id="audio-amida" src="sons/amida.mp3"></audio>
+
+    <script>
+        const dadosFuncoes = {
+            hidrocarboneto: {
+                titulo: "Hidrocarboneto",
+                texto: "Compostos formados apenas por Carbono e Hidrogênio. No modelo tátil, sinta as esferas lisas interligadas. Presentes nos combustíveis como o gás de cozinha.",
+                alt: "Fórmula estrutural do Metano. Um átomo central de Carbono conectado a quatro átomos de Hidrogênio por ligações simples."
+            },
+            alcool: {
+                titulo: "Álcool",
+                texto: "Apresenta o grupo Hidroxila ligado a um carbono saturado. Sinta a esfera rugosa de Oxigênio ligada ao Carbono e ao Hidrogênio. Presente no etanol.",
+                alt: "Fórmula geral de um álcool. Cadeia carbônica ligada a uma hidroxila, grupo O H."
+            },
+            fenol: {
+                titulo: "Fenol",
+                texto: "Grupo Hidroxila ligado diretamente a um anel aromático. Sinta a estrutura geométrica tátil hexagonal com a ramificação rugosa.",
+                alt: "Fórmula estrutural do Fenol. Um anel benzênico hexagonal ligado a um grupo O H."
+            },
+            aldeido: {
+                titulo: "Aldeído",
+                texto: "Possui a carbonila na ponta da cadeia. Sinta os dois entalhes no palito que representam a ligação dupla com o oxigênio rugoso na extremidade.",
+                alt: "Fórmula geral de um Aldeído. Um carbono fazendo uma ligação dupla com um Oxigênio e uma ligação simples com Hidrogênio na ponta."
+            },
+            cetona: {
+                titulo: "Cetona",
+                texto: "Possui a carbonila entre dois carbonos da cadeia. Sinta a ligação dupla tátil projetando-se no meio do modelo molecular.",
+                alt: "Fórmula geral de uma Cetona. Um átomo de Carbono central fazendo dupla ligação com um Oxigênio no meio da cadeia."
+            },
+            acido_carboxilico: {
+                titulo: "Ácido Carboxílico",
+                texto: "Grupo Carboxila na ponta da cadeia. É o responsável pelo toque azedo na comida, como na Vitamina C. Sinta as duas esferas de Oxigênio na ponta.",
+                alt: "Fórmula geral do Ácido Carboxílico. Um carbono ligado por dupla ligação a um Oxigênio e por ligação simples a uma hidroxila O H."
+            },
+            ester: {
+                titulo: "Éster",
+                texto: "Derivado de ácidos carboxílicos, responsável pelo aroma doce das frutas. Também presente na estrutura protetora da Vitamina C.",
+                alt: "Fórmula geral de um Éster. Um carbono com dupla ligação com um Oxigênio e uma ligação simples com outro Oxigênio conectado à cadeia."
+            },
+            ether: {
+                titulo: "Éter",
+                texto: "Um átomo de Oxigênio posicionado entre dois Carbonos. No modelo da Vitamina D, procure a esfera rugosa centralizada que interrompe a sequência liso-liso dos carbonos.",
+                alt: "Fórmula geral de um Éter. Um átomo de Oxigênio central conectado por duas ligações simples a duas cadeias de carbono."
+            },
+            amina: {
+                titulo: "Aminas",
+                texto: "Derivada da amônia, possui o átomo de Nitrogênio. Sinta a esfera texturizada com linhas em relevo. É uma peça central na estrutura da Vitamina B9.",
+                alt: "Fórmula geral de uma Amina primária. Um átomo de Nitrogênio conectado a uma cadeia carbônica e a dois Hidrogênios."
+            },
+            amida: {
+                titulo: "Amidas",
+                texto: "Nitrogênio ligado diretamente a uma carbonila. Sinta o conjunto do relevo do Nitrogênio ao lado da ligação dupla do Oxigênio. Também presente na Vitamina B9.",
+                alt: "Fórmula geral de uma Amida. Um carbono ligado por dupla ligação a um Oxigênio e por ligação simples a um Nitrogênio."
+            }
+        };
+
+        function ativarFuncao(idFuncao) {
+            // 1. Pausar players de mp3 locais (caso use efeitos na pasta sons/)
+            const todasAsFuncoes = Object.keys(dadosFuncoes);
+            todasAsFuncoes.forEach(f => {
+                const som = document.getElementById('audio-' + f);
+                if (som) {
+                    som.pause();
+                    som.currentTime = 0;
+                }
+            });
+
+            // 2. Atualizar textos do visor (O leitor de tela nativo lerá esta mudança devido ao aria-live)
+            document.getElementById('titulo-funcao').innerText = dadosFuncoes[idFuncao].titulo;
+            document.getElementById('texto-funcao').innerText = dadosFuncoes[idFuncao].texto;
+
+            // 3. Atualizar imagem local
+            const elementoImagem = document.getElementById('imagem-funcao');
+            elementoImagem.src = "imagens/" + idFuncao + ".png"
+            elementoImagem.alt = dadosFuncoes[idFuncao].alt; 
+            elementoImagem.style.display = "block"; 
+
+            // 4. Tocar o mp3 local se houver (por exemplo, a voz gravada da Virgínia)
+            const audioParaTocar = document.getElementById('audio-' + idFuncao);
+            if (audioParaTocar) {
+                audioParaTocar.play().catch(function(e) { 
+                    console.log("Sem mp3 local para tocar em segundo plano."); 
+                });
+            }
+        }
+    </script>
+
+</body>
+</html>
